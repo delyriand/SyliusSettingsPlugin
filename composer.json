@@ -5,7 +5,7 @@
     "description": "Add a settings panel to your Sylius.",
     "license": "MIT",
     "require": {
-        "php": "^8.0",
+        "php": "^8.1",
         "sylius/sylius": ">=1.12 <2.0"
     },
     "require-dev": {
