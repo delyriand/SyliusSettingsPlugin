@@ -76,8 +76,7 @@ The configuration is then required to run any console command.
 
 As a good start you can have a look at:
 
-- The [configuration file](dist/config/packages/monsieurbiz_settings_plugin_custom.yaml) to add your own settings.
-- The [form with your own fields](dist/src/Form/SettingsType.php).
+- The [form with your own fields](dist/src/Form/SettingsType.php) and with the `#[AsSettings]` annotation to define the settings.
 
 Then you can get your settings using a twig function: `setting()`.  
 Have a look at [this example](dist/templates/views/message.html.twig).
@@ -127,7 +126,16 @@ If you want to keep a value as it is in the database when running this fixture, 
 
 ### Extends existing settings form
 
-If you want to add a field to an existing settings form (like in another plugin), you can check [the example in the test app](dist/src/Form/SettingsExtensionType.php)
+If you want to add a field to an existing settings form (like in another plugin), you can check [the example in the test app](dist/src/Form/SettingsExtensionType.php).
+
+In this case, you need to declare parameters in YAML to enable developers to add default values for the new fields.
+
+```yaml
+monsieurbiz_sylius_settings:
+    settings:
+        app.default:
+            …
+```
 
 ### Use CLI
 
