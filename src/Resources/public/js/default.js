@@ -1,3 +1,47 @@
+// function to disable the related input field
+function disableRelatedInput(relatedInput) {
+  relatedInput.disabled = 'disabled';
+  relatedInput.parentNode.classList.add('disabled-input');
+
+  // if input has "data-file-type" attribute, get parent "monsieurbiz-sylius-file-manager__field" element, find last "field" element and add disabled class
+  if (relatedInput.dataset.fileType) {
+    const buttonContainer = relatedInput.closest('.monsieurbiz-sylius-file-manager__field').lastElementChild;
+    if (buttonContainer) {
+      buttonContainer.classList.add('disabled-input');
+    }
+  }
+
+  // dispatch custom disabled event to custom scripts
+  document.dispatchEvent(new CustomEvent('mbiz:config:disabled-field', {
+    detail: {
+      relatedInput: relatedInput
+    }
+  }));
+}
+
+// function to enable the related input field
+function enableRelatedInput(relatedInput) {
+  relatedInput.disabled = '';
+  relatedInput.parentNode.classList.remove('disabled-input');
+  if (relatedInput.dataset.fileType) {
+    const buttonContainer = relatedInput.closest('.monsieurbiz-sylius-file-manager__field').lastElementChild;
+    if (buttonContainer) {
+      buttonContainer.classList.remove('disabled-input');
+    }
+  }
+
+  // dispatch custom enabled event to custom scripts
+  document.dispatchEvent(new CustomEvent('mbiz:config:enabled-field', {
+    detail: {
+      relatedInput: relatedInput
+    }
+  }));
+
+  window.setTimeout(function () {
+    relatedInput.focus();
+  }, 100);
+}
+
 (function () {
   document.addEventListener("DOMContentLoaded", function() {
     const components = document.querySelectorAll('[data-component]');
@@ -7,19 +51,6 @@
           (function (component) {
             const relatedId = component.dataset.relatedId;
             const relatedInput = document.getElementById(relatedId);
-            if (component.checked) {
-              relatedInput.disabled = 'disabled';
-            }
-            component.addEventListener('change', function (e) {
-              if (!e.target.checked) {
-                relatedInput.disabled = '';
-                window.setTimeout(function () {
-                  relatedInput.focus();
-                }, 100);
-              } else {
-                relatedInput.disabled = 'disabled';
-              }
-            });
 
             // Reorganize the two fields
             if (component.dataset.reorganize) {
@@ -38,6 +69,17 @@
               valueField.className = 'field twelve wide column';
               defaultField.className = 'field four wide column';
             }
+
+            if (component.checked) {
+              disableRelatedInput(relatedInput);
+            }
+            component.addEventListener('change', function (e) {
+              if (!e.target.checked) {
+                enableRelatedInput(relatedInput);
+              } else {
+                disableRelatedInput(relatedInput);
+              }
+            });
           })(component);
           break;
         default:
